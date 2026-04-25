@@ -1,6 +1,7 @@
 $ImageName = "desafio-itau-backend-api"
 $ContainerName = "desafio-itau-backend-container"
 $Port = 8080
+$StatisticsWindowSeconds = 60
 
 Write-Host "Criando imagem Docker..."
 docker build -t $ImageName .
@@ -15,6 +16,7 @@ Write-Host "Subindo aplicacao..."
 docker run -d `
   --name $ContainerName `
   -p ${Port}:8080 `
+  -e APP_STATISTICS_WINDOW_SECONDS=$StatisticsWindowSeconds `
   $ImageName
 
 Write-Host ""

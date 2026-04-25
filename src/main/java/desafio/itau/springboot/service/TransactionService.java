@@ -7,12 +7,18 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.springframework.stereotype.Service;
 
+import desafio.itau.springboot.config.StatisticsProperties;
 import desafio.itau.springboot.model.Transaction;
 
 @Service
 public class TransactionService {
 
     private final Queue<Transaction> transactions = new ConcurrentLinkedDeque<>();
+    private final StatisticsProperties statisticsProperties;
+
+    public TransactionService(StatisticsProperties statisticsProperties) {
+        this.statisticsProperties = statisticsProperties;
+    }
 
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
@@ -22,12 +28,13 @@ public class TransactionService {
         transactions.clear();
     }
 
-    //filtrar pelos ultimos 60 segundos
     public DoubleSummaryStatistics getStatistics() {
         OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime startTime = now.minusSeconds(statisticsProperties.getWindowSeconds());
+
         return transactions.stream()
-            .filter(t -> t.getDataHora().isAfter(now.minusSeconds(60)))
-            .mapToDouble(Transaction::getValor)
-            .summaryStatistics();
+                .filter(transaction -> !transaction.getDataHora().isBefore(startTime))
+                .mapToDouble(Transaction::getValor)
+                .summaryStatistics();
     }
 }
