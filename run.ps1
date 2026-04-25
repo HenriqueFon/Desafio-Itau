@@ -18,6 +18,6 @@ docker run -d `
   $ImageName
 
 Write-Host ""
-Write-Host "Aplicacao rodando em: http://localhost:$Port"
+Write-Host "Aplicacao rodando em: http://localhost:$Port/swagger-ui/index.html"
 Write-Host "Para ver os logs:"
 Write-Host "docker logs -f $ContainerName"
