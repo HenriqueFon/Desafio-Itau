@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import desafio.itau.springboot.dto.TransactionRequest;
+import desafio.itau.springboot.exception.InvalidTransactionException;
 import desafio.itau.springboot.model.Transaction;
 import desafio.itau.springboot.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +64,10 @@ public class TransactionController {
             @Valid @RequestBody TransactionRequest request
     ) {
         if (request.getDataHora().isAfter(OffsetDateTime.now())) {
-            return ResponseEntity.unprocessableEntity().build();
+            throw new InvalidTransactionException(
+                    "dataHora",
+                    "A data e hora da transação não pode estar no futuro."
+            );
         }
 
         transactionService.addTransaction(new Transaction(request.getValor(), request.getDataHora()));
